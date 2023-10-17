@@ -11,10 +11,7 @@ import { issueSchema } from "@/app/zod-schemas";
 import z from "zod";
 import { Spinner, ErrorMessage } from "@/app/components";
 import { Issue } from "@prisma/client";
-
-const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
-  ssr: false,
-});
+import SimpleMDE from "react-simplemde-editor";
 
 type IssueFormData = z.infer<typeof issueSchema>;
 
