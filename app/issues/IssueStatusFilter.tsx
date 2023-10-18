@@ -1,6 +1,7 @@
 "use client";
 import { Issue, Status } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
+import { useRouter } from "next/navigation";
 import { Fragment } from "react";
 import { Toaster } from "react-hot-toast";
 
@@ -11,10 +12,17 @@ const statues: { label: String; value: Status }[] = [
 ];
 
 const IssueStatusFilter = () => {
+  const router = useRouter();
+
   return (
     <Fragment>
       <Toaster />
-      <Select.Root>
+      <Select.Root
+        onValueChange={(status) => {
+          const query = status ? `?status=${status}` : "";
+          router.push("/issues/list/" + query);
+        }}
+      >
         <Select.Trigger placeholder="Filter By Status" />
         <Select.Content>
           <Select.Group>
