@@ -13,6 +13,7 @@ import { getServerSession } from "next-auth";
 import options from "@/app/auth/options";
 import AssigneeSelect from "./AssigneeSelect";
 import StatusSelect from "./StatusSelect";
+import exp from "constants";
 
 interface Props {
   params: { id: string };
@@ -47,3 +48,14 @@ const IssueDetailPage = async ({ params }: Props) => {
 };
 
 export default IssueDetailPage;
+
+export async function generateMetadata({ params }: Props) {
+  const issue = await prisma.issue.findUnique({
+    where: { id: parseInt(params.id) },
+  });
+
+  return {
+    title: issue?.title,
+    description: issue?.description,
+  };
+}
