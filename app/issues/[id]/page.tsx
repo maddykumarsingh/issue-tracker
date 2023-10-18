@@ -4,7 +4,7 @@ import { Pencil2Icon } from "@radix-ui/react-icons";
 import { Card, Flex, Grid, Heading, Text, Box, Button } from "@radix-ui/themes";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import React from "react";
+import React, { cache } from "react";
 import Markdown from "react-markdown";
 import EditIssueButton from "./EditIssueButton";
 import IssueDetail from "./IssueDetail";
@@ -19,12 +19,16 @@ interface Props {
   params: { id: string };
 }
 
+const fetchIssue = cache((issueId: number) =>
+  prisma.issue.findUnique({
+    where: { id: issueId },
+  })
+);
+
 const IssueDetailPage = async ({ params }: Props) => {
   const session = await getServerSession(options);
 
-  const issue = await prisma.issue.findUnique({
-    where: { id: parseInt(params.id) },
-  });
+  const issue = await fetchIssue(parseInt(params.id));
 
   if (!issue) notFound();
 
@@ -50,9 +54,7 @@ const IssueDetailPage = async ({ params }: Props) => {
 export default IssueDetailPage;
 
 export async function generateMetadata({ params }: Props) {
-  const issue = await prisma.issue.findUnique({
-    where: { id: parseInt(params.id) },
-  });
+  const issue = await fetchIssue(parseInt(params.id));
 
   return {
     title: issue?.title,
