@@ -1,8 +1,14 @@
 import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { issueSchema } from "../../zod-schemas";
+import { getServerSession } from "next-auth";
+import options from "@/app/auth/options";
 
 export  async function POST( request:NextRequest ){
+
+ const session =  await getServerSession(options)
+
+ if( !session ) return NextResponse.json({ error: 'Unauthorized access denied'}, { status:401})
       
     const body = await request.json();
     const validation = issueSchema.safeParse( body );

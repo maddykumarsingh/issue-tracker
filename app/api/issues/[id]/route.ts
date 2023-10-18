@@ -1,8 +1,14 @@
+import options from "@/app/auth/options";
 import { issueSchema } from "@/app/zod-schemas";
 import prisma from "@/prisma/client";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export  async function PATCH( request:NextRequest , { params }:{ params:{ id:string}} ){
+
+    const session =  await getServerSession(options)
+
+    if( !session ) return NextResponse.json({ error: 'Unauthorized access denied'}, { status:401})
       
     const body = await request.json();
     const validation = issueSchema.safeParse( body );
@@ -32,6 +38,11 @@ export async function GET( request:NextRequest , { params }:{ params:{ id:string
 }
 
 export async function DELETE( request:NextRequest , { params }:{ params:{ id:string}}){
+
+    const session =  await getServerSession(options)
+
+    if( !session ) return NextResponse.json({ error: 'Unauthorized access denied'}, { status:401})
+
     const issue = await prisma.issue.findUnique({ where:{ id:parseInt( params.id )}})
 
     if( !issue ) return NextResponse.json( 'Issue Not Found' , {status:404 }); 

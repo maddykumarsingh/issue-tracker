@@ -9,12 +9,16 @@ import Markdown from "react-markdown";
 import EditIssueButton from "./EditIssueButton";
 import IssueDetail from "./IssueDetail";
 import DeleteIssueButton from "./DeleteIssueButton";
+import { getServerSession } from "next-auth";
+import options from "@/app/auth/options";
 
 interface Props {
   params: { id: string };
 }
 
 const IssueDetailPage = async ({ params }: Props) => {
+  const session = await getServerSession(options);
+
   const issue = await prisma.issue.findUnique({
     where: { id: parseInt(params.id) },
   });
@@ -26,12 +30,14 @@ const IssueDetailPage = async ({ params }: Props) => {
       <Box className="md:col-span-4">
         <IssueDetail issue={issue} />
       </Box>
-      <Box>
-        <Flex gap={"4"} direction="column">
-          <EditIssueButton issueId={issue.id} />
-          <DeleteIssueButton issueId={issue.id} />
-        </Flex>
-      </Box>
+      {session && (
+        <Box>
+          <Flex gap={"4"} direction="column">
+            <EditIssueButton issueId={issue.id} />
+            <DeleteIssueButton issueId={issue.id} />
+          </Flex>
+        </Box>
+      )}
     </Grid>
   );
 };
